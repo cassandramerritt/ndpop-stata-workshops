@@ -1,39 +1,29 @@
 # Getting Started with Stata — Worksheet
 ### Workshop 1 — Stata Onboarding / Working with Data · 75 minutes
 
-**Work from this sheet during the session.** It tells you what to do and asks you questions.
-It does **not** answer them — that is deliberate.
-
-**The answers come from the room, not from this sheet.** Work them out, argue about them, get them
-wrong. If you are properly stuck, ask — that is faster than guessing, and it is what the instructor
-and the helpdesk are for.
+**This Sheet** provides guided instructions to help you progress through the workshop.
 
 ---
 
 > ## ⚠ Setting up
 >
+> **0.** If you have Stata already installed, you may use your own device. Otherwise, please use a lab workstation. If you need help with installation, talk to me after the session.
+>
 > **1.** Go to **[github.com/cassandramerritt/ndpop-stata-workshops](https://github.com/cassandramerritt/ndpop-stata-workshops)**
 > → green **Code** button → **Download ZIP**
 >
-> **2.** Unzip to your **Documents** folder (it stays local, or use a cloud-synced folder) — and remember where.
+> **2. Unzip the download.** Note: on lab workstations, this will not automatically sync --- they'll stay local, but assume it will not last. 
 >
-> **3. This is a shared machine.** Anything you save here may be gone when you log out.
-> Before you leave, copy your work to a USB stick, your email, or a cloud drive.
+> **3. Lab workstations are shared machines.** Before you leave, copy your work to a USB stick, your email, or a cloud drive.
 >
-> **Later you will write a line like this — with *your* path:**
-> ```stata
-> cd "C:/Users/yourname/Documents/stata-workshop"
-> ```
-> **Forward slashes `/`, even on Windows.** Backslashes break on Mac. Keep the quotes.
-> If a command mentioning a file fails, check this line first.
 
 ## Marks used below
 
 | Mark | Meaning |
 |---|---|
 | **▶** | You type it |
-| **◉** | Instructor demonstrates — watch, don't type |
-| **◈** | **Stop and think before running it.** Don't look it up. |
+| **◉** | Instructor will demonstrate. |
+| **◈** | **Stop, think, share.** We will discuss as time allows.  |
 | **◇** | Only if we have time. The worked do-files cover it either way. |
 
 ---
@@ -47,7 +37,6 @@ and the helpdesk are for.
 
 | Stage | Today |
 |---|---|
-| Collect | Block 4 |
 | **Inspect** | **Block 2** |
 | **Clean** | **Block 3** |
 | Analyze · Report | Block 4 |
@@ -58,48 +47,47 @@ and the helpdesk are for.
 
 ### 2.1 Open it
 
-**▶** Double-click `first_looks.dta`. No command, no path.
+**▶** Double-click `first_looks.dta` in your file explorer (where you unzipped the downloaded files).
 
 **▶** `browse`
 
-**◈ Before anyone tells you:** How much can you work out from this screen alone? What *is* this data?
-**What is one row?**
+**◈ Before anyone tells you:** How much can you work out from this screen alone? 
+**What *is* this data?**
+**What is a row (horizontal) of data?**
+**What is a column (vertical) of data?**
 
 ### 2.2 Two small experiments
 
 **▶** `Browse`  → then → `bro`
 
-One fails, one doesn't. **◈ What are the two lessons?**
+**◈ What are the two lessons?** 
 
 ### 2.3 The windows
 
 **◉** Results · Command · History · Variables · Properties · drop-down menus
 
-Note what the **History** window is doing. You will need it in 2.8.
-
 ### 2.4 Describing
 
-**▶**
+**▶** Run one at a time. 
 ```stata
 describe
 describe state
 describe state pop
 describe state pop-popurban
 describe state pop*
+describe state pop??p
 ```
 
-**◈ What is the general shape of a Stata command?** Write it down before we discuss it:
-
-`________________________________________`
+**◈ What is the general shape of a Stata command?** 
 
 **◉** `describe state pop-state`  ← fails on purpose. Why?
+
+**▶** `codebook state pop has_nd` and `inspect state pop has_nd` do similar jobs.
+**◈ When would you reach for one rather than another?**
 
 **▶** `summarize state pop has_nd`
 
 **◈** `state` gets no observations. Why not?
-
-**▣** `codebook state pop has_nd` and `inspect state pop has_nd` do similar jobs.
-**◈ When would you reach for one rather than another?**
 
 ### 2.5 Listing rows, and `if`
 
@@ -110,20 +98,14 @@ list state has_nd if has_nd == 1
 ```
 → Indiana, and only Indiana. (`==` asks a question. `=` assigns a value. They are not interchangeable.)
 
-**◈ PREDICT FIRST — write your answer down, then run them.**
+**◈ PREDICT FIRST — what do you think each of the next commands will return, then run them.**
 
 ```stata
 list state has_nd if has_nd != 0
 list state has_nd if has_nd > 0
 ```
 
-I think `!= 0` returns: `______________________`
-
-I think `> 0` returns: `______________________`
-
 Now run them. **Were you right? If not, what is going on?**
-
-*(This is the most important thing in the block. Don't look it up.)*
 
 **▶** `help list`
 
@@ -132,6 +114,7 @@ Now run them. **Were you right? If not, what is going on?**
 **▶**
 ```stata
 tabulate border
+tabulate state border
 tabulate border coastal
 tabulate border coastal, row column
 ```
@@ -148,8 +131,10 @@ list state if border == 1 & coastal == 1
 
 ### 2.7 Sorting
 
-**▶**
+**▶** Run one at a time, and watch the row order change.
 ```stata
+sort pop
+gsort pop65p
 gsort -pop65p
 list state pop65p in 1/5
 ```
@@ -214,19 +199,21 @@ Population is split by age: `poplt5`, `pop5_17`, `pop18p`, `pop65p`. They should
 
 **▶** `assert pop == check_pop`
 
-> **◈ This fails, and it stops your do-file. That is the point.**
->
-> **Why did it fail?** Look at the variable names and think about what they contain.
-> Don't move on until you have a theory.
+**◈** This one fails on purpose, and stops the do-file. Why?
 
 **▶** Fix it with `replace` (not `generate` — it already exists), then `assert` again.
 → Silence means it passed.
 
-**◇** `pop18_65` → `rename` → `check2_pop` → `assert` → `drop`
+**▶** Create the mutually exclusive groups: `pop18p` minus `pop65p`. Call it `pop18_65`.
+
+**◈** Is this new variable *name* accurate? If needed, use the (`rename`) command.
+
+**▶** Build `check2_pop` from the four groups that now don't overlap, `assert` it against `pop`,
+then `drop` both check variables.
 
 ### 3.4 Functions
 
-**▶** Create `pop_m` = `pop` divided by a million. Then `replace` it, rounded to one decimal —
+**▶** Create `pop_m` = `pop` divided by a million. Stata understands math expressions. Then `replace` it, rounded to one decimal —
 `round(pop_m, .1)`.
 
 **▶** `help functions`
@@ -243,19 +230,24 @@ Population is split by age: `poplt5`, `pop5_17`, `pop18p`, `pop65p`. They should
 
 **▶** List the states where `big_state` is 1. → 5 states.
 
-**◇** `egen big_state2 = pctile(pop), p(90)` → `replace` → `assert big_state == big_state2`
-**◈** Two routes, one answer. What does that tell you?
+**◇**
+```stata
+egen big_state2 = pctile(pop), p(90)
+replace big_state2 = pop >= big_state2
+assert big_state == big_state2
+```
+**◈** Compare the two. What does that tell you?
 
-### 3.6 Text · ◉ WATCH ONLY
+### 3.6 Text · ◉
 
-You are not expected to type this or to write regular expressions.
+Regular expressions are not something you are expected to write.
 
 ```stata
 list state state2 if regexm(state, "\.")
 generate state3 = substr(state, 4, strlen(state)) if regexm(state, "\.")
 
-replace state = "South" if state2 == "SC" | "SD"       // WRONG
-replace state = "South" if inlist(state2, "SC", "SD")  // RIGHT
+replace state = "South" if state2 == "SC" | "SD"       // WRONG (HOW TO FIX?)
+replace state = "South" if inlist(state2, "SC", "SD")  // ALTERNATE ANSWER
 ```
 **◈** The wrong line reads like English. Why isn't it valid?
 
@@ -277,11 +269,16 @@ tabulate coastal border
 
 ### 3.8 Groups · ◇
 
-**▶** `generate nval = _n` · `generate nvals = _N` · then `drop nval*`
+**▶** `generate nval = _n` · `generate nvals = _N` 
+
+**◈** Inspect the data. What are these new variables?
+
+**▶** `drop nval*`
 
 **▶**
 ```stata
 bysort region: generate region_states = _N
+bysort region: generate nval = _n
 bysort region: egen region_pop = sum(pop_m)
 list region region_states region_pop if nval == 1
 ```
@@ -308,19 +305,14 @@ Open `test_log.txt` in a text editor.
 **Work in `block4_student.do`.** It gives you the task at each step; you write the command.
 
 Each task ends with a **`help:`** line naming the help file for every command and function the answer
-uses. **Open them.** Knowing what to look up is the actual skill — nobody memorises Stata. Read the
-**Syntax** block at the top and the **Examples** at the bottom; skip the middle until you need it.
-
-Google Trends search interest — Notre Dame, MIT, Clemson. Monthly, 2004–2026, 272 rows.
-Values are relative: 100 is the highest point across all three.
+uses. The **Syntax** block at the top and the **Examples** at the bottom are the parts to read.
 
 **◈** In Block 2, one row was one state. **What is one row here?**
 
 You will: import a CSV → fix the dates → rename and label → `correlate` and `regress` →
 `scatter` / `twoway` / `tsline` → `graph export`.
 
-The polished figures are printed complete in the do-file. Run them, then delete an option and see
-what changes.
+The polished figures are printed complete in the do-file.
 
 ---
 
@@ -340,20 +332,19 @@ what changes.
 
 **Online:**
 
-- The full Stata manuals are already on your machine, under `help`
+- The `help` command. Full Stata manuals are included in the installation.
 - [stata.com/support](https://www.stata.com/support/) — FAQs and video tutorials
 - [blog.stata.com](https://blog.stata.com) — detailed worked examples
 - [stats.oarc.ucla.edu/stata](https://stats.oarc.ucla.edu/stata/) — UCLA OARC tutorials and annotated output
-- **[Stata cheat sheets](https://www.stata.com/flyers/stata-cheat-sheets/)** — free PDFs. Print the syntax one.
+- **[Stata cheat sheets](https://www.stata.com/flyers/stata-cheat-sheets/)** — free PDFs, including one for syntax
 
 
 **AI chatbots:** useful for finding a command name or decoding an error — but they invent options
-that don't exist, fluently. **Never trust a Stata command from a chatbot until you have run it and
-read the output.**
+that don't exist or are poor answers, fluently. **Never trust a Stata command from a chatbot until you have understand it independently.**
 
-**A book, for later:** Cameron & Trivedi, *Microeconometrics Using Stata*, 2nd ed. (Stata Press, 2022)
+**An Advanced Textbook with Stata:** Cameron & Trivedi, *Microeconometrics Using Stata*, 2nd ed. (Stata Press, 2022)
 — a graduate text, well beyond today. Its early chapters on syntax and data management cover the
-ground you started here; check the library before buying.
+ground you started here; check the library.
 
 **Before you log out:** copy your do-files off this machine.
 

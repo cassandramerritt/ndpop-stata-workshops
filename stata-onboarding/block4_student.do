@@ -2,8 +2,8 @@
 *** Google Trends search interest: Notre Dame, MIT, Clemson
 *** your name here, date here
 
-*** The data is monthly search interest, Jan 2004 - Aug 2026. Values are
-*** relative: 100 is the single highest point across all three schools.
+*** The data are from Google Trends for three different search terms.
+*** Note: Google Trend "interest" numbers are all relative to the maximum of these terms.
 
 *** You write the commands. The comments tell you what to do, not how.
 
@@ -123,7 +123,22 @@ cd ""
 
 
 
-* 15. All three schools over time, as lines. This is the one that needs
+* 15. Now the same plot for a different school: Notre Dame against MIT.
+*     One command, barely changed from step 13.
+*     help: scatter
+
+
+
+* 16. Put both comparisons on ONE graph - two scatters layered together.
+*     twoway again, but this time both pieces are scatters.
+*     Stata will label them "nd_interest" twice, which is useless, so name
+*     them yourself with legend(order(1 "Clemson" 2 "MIT")).
+*     Give the x axis a title that covers both: xtitle("Other University Interest").
+*     help: graph twoway   legend_options
+
+
+
+* 17. All three schools over time, as lines. This is the one that needs
 *     the tsset from step 9. Stack the legend with legend(rows(3)).
 *     help: tsline   legend_options
 
@@ -164,13 +179,13 @@ tsline nd_interest clemson_interest mit_interest in 170/272, ///
 
 ***** REPORT
 
-* 16. Export one of your figures as a PNG.
+* 18. Export one of your figures as a PNG.
 *     name() picks which graph. Quote the filename. Use , replace.
 *     help: graph export
 
 
 
 * optional
-* 17. Put both figures in one image and export that too.
+* 19. Put both figures in one image and export that too.
 graph combine trends_scatter seasons_tsline, name(combo_trends, replace)
 graph export "combo_trends.png", name(combo_trends) replace

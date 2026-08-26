@@ -34,8 +34,8 @@ line at a time to review, or to catch up on anything the session did not reach.
 | File | What it is | When |
 |---|---|---|
 | `handout_stata_onboarding.md` | **Worksheet** — what to do, and questions to think about | During |
-| `first_looks.dta` | 1980 US Census data, by state | Blocks 2–3 |
-| `google_trends_universities.csv` | Google Trends search interest, monthly 2004–2026 | Block 4 |
+| `first_looks.dta` | Data for Blocks 2–3 — working out what it is, is the first task | Blocks 2–3 |
+| `google_trends_universities.csv` | Raw data for Block 4 | Block 4 |
 | `block3_student.do` | Block 3 do-file — you fill it in | During |
 | `block4_student.do` | Block 4 do-file — you fill it in | During |
 | `block3_complete.do` | Block 3 **with every answer filled in** | After |

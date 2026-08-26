@@ -20,9 +20,26 @@ describe
 list in 1/5
 summarize
 
-*    One row is one MONTH. In Block 2 one row was one state. Every dataset
-*    has a unit like this, and finding it is the first thing to do with any
-*    data you are handed. Workshop 2 is built on that question.
+*    WHAT INSPECTION ALONE TELLS YOU
+*    - 272 rows, 4 columns.
+*    - One row is one MONTH, running 2004 to 2026. So: time series.
+*    - Three columns of numbers, one per university, roughly 0 to 100.
+*
+*    WHAT IT DOES NOT TELL YOU - you have to be told, or go and find out
+*    - These are Google Trends search-interest figures.
+*    - They are RELATIVE, not counts. Google scales them so the single highest
+*      point across the three search terms is 100. Notre Dame holds that peak,
+*      so MIT tops out at 39 and Clemson at 70. That does NOT mean "MIT is
+*      small" - it means MIT never out-searched Notre Dame's best month.
+*    - Nothing here counts people.
+*
+*    That gap is the point of inspecting first. You can read the SHAPE of a
+*    dataset off the screen; you cannot read its MEANING. For that you need
+*    documentation, the person who gave it to you, or the source.
+*
+*    In Block 2 one row was one state. Here it is one month. Every dataset has
+*    a unit like that, and finding it is the first thing to do with any data
+*    you are handed. Workshop 2 is built on that question.
 
 
 ***** CLEAN
@@ -92,13 +109,24 @@ twoway (scatter nd_interest clemson_interest) ///
 	(lfit nd_interest clemson_interest), ///
 	legend(pos(6))
 
-* 15. All three schools over time. This is the one that needed tsset.
+* 15. The same plot for a different school. Barely changed from step 13.
+scatter nd_interest mit_interest
+
+* 16. Both comparisons on one graph - two scatters layered.
+*     Without legend(order(...)) Stata labels both series "nd_interest",
+*     which tells the reader nothing. Name them yourself.
+twoway (scatter nd_interest clemson_interest) ///
+	(scatter nd_interest mit_interest), ///
+	legend(order(1 "Clemson" 2 "MIT")) ///
+	xtitle("Other University Interest")
+
+* 17. All three schools over time. This is the one that needed tsset.
 tsline nd_interest clemson_interest mit_interest, legend(rows(3))
 
 
 ***** PROVIDED - read these, run them, take them apart
 
-* Built one option at a time from what you typed in 13-15. Delete an option
+* Built one option at a time from what you typed in 13-17. Delete an option
 * and rerun to see what it was doing.
 
 twoway (scatter nd_interest clemson_interest, mcolor(orange)) ///
@@ -113,7 +141,7 @@ twoway (scatter nd_interest clemson_interest, mcolor(orange)) ///
 * /// at the end of a line means "this command continues below".
 * Without it, Stata reads each line as its own command.
 
-* 16. Export it. Doing this straight after drawing is the safe habit: in a
+* 18. Export it. Doing this straight after drawing is the safe habit: in a
 *     batch run, graph export can only reach the graph that is currently
 *     displayed. Interactively each named graph has its own window, so you
 *     can export any of them at any time.
@@ -138,6 +166,6 @@ graph export "seasons_tsline.png", replace
 ***** REPORT
 
 * optional
-* 17. Both figures in one image.
+* 19. Both figures in one image.
 graph combine trends_scatter seasons_tsline, name(combo_trends, replace)
 graph export "combo_trends.png", replace
