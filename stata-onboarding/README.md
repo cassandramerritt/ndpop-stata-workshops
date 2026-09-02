@@ -26,8 +26,8 @@ Double-clicking a file also quietly tells Stata which folder to work in — whic
 knowing about, and section 2.9 of the worksheet is where we look at it properly.
 
 If Stata ever comes back with **`file not found`, `r(601)`**, it is looking in the wrong folder.
-`do_not_start_here.do` has the fix written out. (It is named that way because it is *not* how you
-start — it is the rescue hatch.)
+Section 2.9 of the worksheet is where we fix that, with `cd` — open the folder in File Explorer,
+copy the path from the address bar, and type `cd "` then paste.
 
 ### 📄 `handout_stata_onboarding.pdf` — the worksheet
 
@@ -50,19 +50,19 @@ By Block 4 you're doing what you'll actually be doing afterwards: looking someth
 
 **Boxes with a bar down the side say _Advanced — not for today_.** Real, working code, printed so
 you have it, with no task attached. Run them after the session — every one of them is also in
-`block2_complete.do` or `block3_complete.do`.
+`block2.do` or `block3.do`.
 
 ---
 
 ## Block 4 is yours to take home
 
 We don't work through Block 4 in the room. You'll see the figure at the end of the session;
-`block4_student.do` is the file that makes it.
+`block4.do` is the file that makes it.
 
 It's written to be followed **on your own, from cold** — nothing in it depends on anything you did
 during the workshop. It takes a genuinely raw file (a Google Trends export: search interest for
 Notre Dame, MIT and Clemson, monthly, 2004–2026) and carries it all the way to a figure you could
-put in a paper. `block4_complete.do` has every answer, commented.
+put in a paper. Every command is written out, and most carry the help file behind it.
 
 That makes the shared-machine warning below matter more than usual. Take the folder with you.
 
@@ -72,37 +72,31 @@ That makes the shared-machine warning below matter more than usual. Take the fol
 
 | File | What it is | When |
 |---|---|---|
-| `do_not_start_here.do` | Rescue hatch if Stata is looking in the wrong folder | If lost |
 | `handout_stata_onboarding.pdf` | **Worksheet** — what to do at each step | During |
 | `slides_stata_onboarding.pdf` | The slides, for reference | After |
 | `first_looks.dta` | **Double-click this to start.** Data for Blocks 2–3 — working out what it is, is the first task | First |
 | `google_trends_universities.csv` | Raw data for Block 4 | Block 4 |
-| `block2_complete.do` | Block 2 written down — the command-window session | If you fell behind |
-| `block3_student.do` | Block 3 — you fill it in | During |
-| `block3_complete.do` | Block 3 **with every answer filled in** | After |
-| `block4_student.do` | **Block 4 — the take-home. Start here afterwards.** | After |
-| `block4_complete.do` | Block 4 **with every answer filled in** | After |
+| `block2.do` | Block 2 written down — the command-window session | If you fell behind |
+| `block3.do` | Block 3 — run it a line at a time | During |
+| `block4.do` | **Block 4 — the take-home. Start here afterwards.** | After |
 
-There's no `block2_student.do`, because the worksheet prints every Block 2 command in full — the
-worksheet *is* the student version. `block2_complete.do` is the fallback record, for catching up or
-reviewing. The real Block 2 exercise is building your **own** version of it, out of Stata's History
-window, at the end of the block.
+One file per block, and every command in it is written out. The worksheet tells you which lines to
+run and what to look for; the file carries the code. The real Block 2 exercise is still building
+your **own** version of `block2.do`, out of Stata's History window, at the end of the block.
 
 ---
 
 ## If you ran out of time
 
-Both `_complete.do` files run start to finish. Open one, run it a line at a time (**Ctrl-D** on
-Windows, **Cmd-Shift-D** on Mac), and read what each line does. That is a perfectly good way to
-learn this.
+Open the file for that block and run it a line at a time (**Ctrl-D** on Windows, **Cmd-Shift-D** on
+Mac), reading what each line does. That is a perfectly good way to learn this.
 
-One deliberate exception: in `block3_complete.do` an `assert` that is *meant* to fail is commented
-out, with its exact error written above it — otherwise it would stop the file and you'd never reach
-the rest. Uncomment it and run it once. Watching it halt is the lesson.
+**One deliberate exception.** In `block3.do`, section 3.3 runs an `assert` that is *meant* to fail,
+and it stops the file dead. That halt is the lesson — a summary table you skim past is easy to
+ignore, a file that refuses to continue is not. Work out why before you run the line below it.
 
-`block2_complete.do` has five lines commented out for a different reason: `browse`, `bro`, `doedit`
-and `cls` only exist in the Stata window, so they can't run from a file in batch. Type those
-yourself.
+`block2.do` has four lines commented out for a different reason: `browse`, `bro`, `doedit` and `cls`
+only exist in the Stata window, so they can't run from a file. Type those yourself.
 
 ---
 
