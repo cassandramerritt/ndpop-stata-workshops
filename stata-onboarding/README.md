@@ -17,15 +17,17 @@ No statistics background assumed. No prior Stata assumed.
 
 ## Start here
 
-### ▶ `start_here.do` — double-click this
+### ▶ `first_looks.dta` — double-click this
 
-Stata opens with its working directory already set to this folder, which is where the data is. Run
-the two lines inside it (`pwd` and `dir`) to confirm. That's the entire setup — you won't type a
-file path again all session.
+**That's how you open Stata today.** Opening the data opens the program, with the data already
+loaded. No path to type, nothing to configure. Your first command is `browse`.
 
-If `pwd` shows the wrong folder, Stata was already open and kept its old working directory.
-`start_here.do` explains how to fix that with `cd`. Use **forward slashes, even on Windows** — they
-work on Windows and Mac both, and Windows hands you backslashes when you paste, so change them.
+Double-clicking a file also quietly tells Stata which folder to work in — which is a thing worth
+knowing about, and section 2.9 of the worksheet is where we look at it properly.
+
+If Stata ever comes back with **`file not found`, `r(601)`**, it is looking in the wrong folder.
+`do_not_start_here.do` has the fix written out. (It is named that way because it is *not* how you
+start — it is the rescue hatch.)
 
 ### 📄 `handout_stata_onboarding.pdf` — the worksheet
 
@@ -70,10 +72,10 @@ That makes the shared-machine warning below matter more than usual. Take the fol
 
 | File | What it is | When |
 |---|---|---|
-| `start_here.do` | Opens Stata in the right folder | First |
+| `do_not_start_here.do` | Rescue hatch if Stata is looking in the wrong folder | If lost |
 | `handout_stata_onboarding.pdf` | **Worksheet** — what to do at each step | During |
 | `slides_stata_onboarding.pdf` | The slides, for reference | After |
-| `first_looks.dta` | Data for Blocks 2–3 — working out what it is, is the first task | Blocks 2–3 |
+| `first_looks.dta` | **Double-click this to start.** Data for Blocks 2–3 — working out what it is, is the first task | First |
 | `google_trends_universities.csv` | Raw data for Block 4 | Block 4 |
 | `block2_complete.do` | Block 2 written down — the command-window session | If you fell behind |
 | `block3_student.do` | Block 3 — you fill it in | During |

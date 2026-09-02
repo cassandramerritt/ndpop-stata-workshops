@@ -30,9 +30,9 @@ local startdir "`c(pwd)'"
 * ---------------------------------------------------------------------
 *  3.1  Where Stata is working
 * ---------------------------------------------------------------------
-* You opened start_here.do by double-clicking, so Stata is already
-* pointed at this folder and a bare filename is enough. If pwd says
-* otherwise, cd to the folder as start_here.do explains.
+* Double-clicking first_looks.dta pointed Stata at this folder for you -
+* that was the point of 2.9 - so a bare filename is enough. If pwd says
+* otherwise, cd to the folder; do_not_start_here.do has the instructions.
 pwd
 
 * ADVANCED - not for today.

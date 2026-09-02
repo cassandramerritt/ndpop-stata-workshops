@@ -33,9 +33,9 @@ local startdir "`c(pwd)'"
 * ---------------------------------------------------------------------
 *  3.1  Where Stata is working
 * ---------------------------------------------------------------------
-* You opened start_here.do by double-clicking, so Stata is already
-* pointed at this folder. If pwd says otherwise, cd to it - start_here.do
-* explains how.
+* Double-clicking first_looks.dta pointed Stata at this folder for you -
+* that was the point of 2.9. If pwd says otherwise, cd to it;
+* do_not_start_here.do has the instructions written out.
 pwd
 
 * ADVANCED - not for today.

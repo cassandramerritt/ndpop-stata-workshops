@@ -1,23 +1,27 @@
 * =====================================================================
-*  Getting Started with Stata - START HERE
+*  DO NOT START HERE.
 *
-*  Double-click this file. Stata opens with its working directory
-*  already set to this folder, which is where the workshop data lives.
-*  That is the whole setup.
+*  To start: double-click first_looks.dta. Opening the data is how you
+*  open Stata today. There is no path to type and nothing to configure.
 *
-*  Run the two lines below to confirm it worked.
+*  This file is the rescue hatch, for one situation only: Stata is
+*  looking in the wrong folder. You will know because a command that
+*  names a file - use, save, log using, import delimited - comes back
+*  with "file not found", r(601).
+*
+*  Section 2.9 of the worksheet does this properly, as a lesson. This is
+*  the written version, for when you need it in a hurry.
 * =====================================================================
 
 
-* --- 1. Where am I? ---------------------------------------------------
-* This should print the folder this file is sitting in.
+* --- 1. Where does Stata think it is? ---------------------------------
+* Highlight the line and press Ctrl-D (Windows) or Cmd-Shift-D (Mac).
 
 pwd
 
 
-* --- 2. Can I see the data? -------------------------------------------
-* This should list first_looks.dta and google_trends_universities.csv,
-* along with the do-files.
+* --- 2. Can it see the data? ------------------------------------------
+* This should list first_looks.dta and google_trends_universities.csv.
 
 dir
 
@@ -25,12 +29,13 @@ dir
 * =====================================================================
 *  If pwd printed the wrong folder
 *
-*  That happens when Stata was ALREADY OPEN before you double-clicked:
-*  the file gets handed to the running Stata, which keeps whatever
-*  working directory it already had.
+*  Two ways that happens. Either Stata was ALREADY OPEN when you
+*  double-clicked, so the file went to the running Stata and it kept
+*  whatever folder it already had. Or you started Stata from the Start
+*  menu or Spotlight, in which case nothing ever chose a folder for you.
 *
-*  Fix it with cd. The reliable way to get the path right:
-*    1. Open this folder in File Explorer.
+*  Either way, say where to look. The reliable way to get the path right:
+*    1. Open the workshop folder in File Explorer or Finder.
 *    2. Click the address bar. The path becomes selectable text.
 *    3. Copy it.
 *    4. Type  cd "  then paste, then close the quote.

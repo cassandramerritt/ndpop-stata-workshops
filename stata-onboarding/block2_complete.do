@@ -33,8 +33,9 @@ if _rc {
 * ---------------------------------------------------------------------
 *  2.1  Open it
 * ---------------------------------------------------------------------
-* You opened this by double-clicking start_here.do, so Stata is already
-* pointed at the right folder and a bare filename is enough.
+* In the session you did not type this: you double-clicked
+* first_looks.dta, which opens Stata with the data already loaded. This
+* file has to run on its own, so it opens the data itself.
 use "first_looks.dta", clear
 
 * browse
