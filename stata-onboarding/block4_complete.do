@@ -1,18 +1,29 @@
-*** block4_complete.do
-*** Google Trends search interest: Notre Dame, MIT, Clemson - ANSWER KEY
-*** Every blank from block4_student.do filled in.
+*** =====================================================================
+***  Block 4 - First Output from Raw Input          ANSWER KEY
+***  Google Trends search interest: Notre Dame, MIT, Clemson.
+***
+***  Opens:  google_trends_universities.csv   272 rows, 4 columns
+***  Saves:  uni_trends.dta, and three .png figures
+***
+***  Every blank from block4_student.do, filled in, with comments on why.
+***  Run it a line at a time and read what each one does.
+*** =====================================================================
 
 clear all
+set more off
 
-* Set your working directory, or make sure Stata already points at the folder
-* holding google_trends_universities.csv. Forward slashes, even on Windows.
-* cd "C:/Users/yourname/Documents/Stata Workshop"
+* Find the data whether you are in the workshop folder already or one
+* level down inside it.
+capture confirm file "google_trends_universities.csv"
+if _rc {
+	capture cd ..
+	confirm file "google_trends_universities.csv"
+}
 
 
 ***** IMPORT
 
-* 1. Import the CSV. Not "use" - that is for .dta files.
-*    Check: 272 observations, 4 variables
+* 1. The command is not use - that is for .dta files. This is a CSV.
 import delimited using "google_trends_universities.csv", clear
 
 * 2. Look at what arrived.
@@ -20,114 +31,115 @@ describe
 list in 1/5
 summarize
 
-*    WHAT INSPECTION ALONE TELLS YOU
-*    - 272 rows, 4 columns.
-*    - One row is one MONTH, running 2004 to 2026. So: time series.
-*    - Three columns of numbers, one per university, roughly 0 to 100.
+* WHAT INSPECTION ALONE TELLS YOU
+*   - 272 rows, 4 columns.
+*   - One row is one MONTH, running 2004 to 2026. So: a time series.
+*   - Three columns of numbers, one per university, roughly 0 to 100.
 *
-*    WHAT IT DOES NOT TELL YOU - you have to be told, or go and find out
-*    - These are Google Trends search-interest figures.
-*    - They are RELATIVE, not counts. Google scales them so the single highest
-*      point across the three search terms is 100. Notre Dame holds that peak,
-*      so MIT tops out at 39 and Clemson at 70. That does NOT mean "MIT is
-*      small" - it means MIT never out-searched Notre Dame's best month.
-*    - Nothing here counts people.
+* WHAT IT DOES NOT TELL YOU
+*   - The numbers are RELATIVE, not counts. Google scales them so the
+*     single highest point across the three search terms is 100. Notre
+*     Dame holds that peak, so the other two never reach it. That does
+*     NOT mean the others are small - it means they never out-searched
+*     Notre Dame's best month.
+*   - Nothing here counts people.
 *
-*    That gap is the point of inspecting first. You can read the SHAPE of a
-*    dataset off the screen; you cannot read its MEANING. For that you need
-*    documentation, the person who gave it to you, or the source.
+* That gap is the point of inspecting first. You can read the SHAPE of a
+* dataset off the screen. You cannot read its MEANING.
 *
-*    In Block 2 one row was one state. Here it is one month. Every dataset has
-*    a unit like that, and finding it is the first thing to do with any data
-*    you are handed. Workshop 2 is built on that question.
+* And the question from Block 2, again: what is one row? There it was
+* one state. Here it is one month. Same question, different unit - and
+* it is the question Workshop 2 is built on.
 
 
 ***** CLEAN
 
-* 3. time came in as TEXT. Stata cannot sort, plot, or do arithmetic on it
-*    until it is a real date. Two steps: build the date, then format it.
-*    date() reads the text; "YMD" tells it the order the parts come in.
+* 3. time came in as TEXT. Stata cannot sort it, plot it, or do
+*    arithmetic on it until it is a real date. Two commands: build the
+*    date, then format it so it displays as one.
 generate date = date(time, "YMD")
 format date %td
 
-*    Before the format line, date reads 16071 - the number of days since
-*    1 January 1960, which is day zero for Stata. After it, 01jan2004.
-*    Dates are just numbers wearing a costume.
+* Dates are numbers wearing a costume. Underneath, 01jan2004 is 16071 -
+* the number of days since 1 January 1960, which is day zero for Stata.
 
-* 4. The data is monthly, so a daily date is more precision than you need.
-*    mofd() = "month of date".
+* 4. The data is monthly, so a daily date is more precision than you
+*    want. Make a monthly version and format that too.
 generate month_date = mofd(date)
 format month_date %tm
 
-* 5. Put the date variables at the front.
+* 5. Put time and the new date variables at the front.
 order time date
 
-* 6. Rename all three in one command. Note the two sets of parentheses:
-*    old names in the first, new names in the second, in the same order.
-*    massachusettsinstituteoftechnolo was truncated by the import - Stata
-*    variable names cap out at 32 characters.
+* 6. Rename the three interest variables to something you can type.
+*    describe showed one of them as massachusettsinstituteoftechnolo -
+*    truncated, because Stata variable names stop at 32 characters.
+*    All three rename in one command.
 rename (universityofnotredame massachusettsinstituteoftechnolo clemsonuniversity) ///
 	(nd_interest mit_interest clemson_interest)
 
-* 7. Label the variables so the graphs come out readable.
+* 7. Label the three variables, so the graphs come out readable.
 label variable nd_interest "University of Notre Dame Interest (Google Trends)"
 label variable mit_interest "Massachusetts Institute of Technology Interest (Google Trends)"
 label variable clemson_interest "Clemson University Interest (Google Trends)"
 
-* 8. Label the dataset.
+* 8. Label the dataset as a whole.
 label data "Google Trends search interest for three universities, 2004-2026. Normalized to peak interest."
 
-* 9. Declare it as time-series data. tsline in step 15 needs this.
-*    Check: "time variable: month_date, 2004m1 to 2026m8", "delta: 1 month"
+* 9. Tell Stata this is time-series data, indexed by the monthly
+*    variable. Without this, tsline in step 17 will not work.
 tsset month_date, monthly
 
-* compress shrinks storage types where it safely can. Optional, free.
-compress
-
-* 10. Save. The two things people forget: QUOTES around a path containing a
-*     space, and , replace so it does not fail the second time you run it.
+* 10. Save. Two things people forget: quotes if the path has a space,
+*     and , replace or it fails the second time you run the file.
 save "uni_trends.dta", replace
 
 
 ***** ANALYZE
 
-* 11. The wildcard catches all three interest variables at once.
+* 11. Correlate the three interest variables. The wildcard names all
+*     three at once.
 correlate *_interest
 
-* 12. Regress with robust standard errors.
+* 12. Regress Notre Dame interest on Clemson interest, robust standard
+*     errors.
 regress nd_interest clemson_interest, robust
+
+* Two lines, and a semester of knowing when they are the right two.
 
 
 ***** VISUALIZE
 
-* 13. A plain scatter.
+* 13. A scatter of Notre Dame against Clemson.
 scatter nd_interest clemson_interest
 
-* 14. The same, with a fitted line. twoway takes each piece in parentheses
-*     and layers them. legend(pos(6)) puts the legend at the bottom.
+* 14. The same, with a fitted line. twoway takes two pieces in
+*     parentheses; legend(pos(6)) puts the legend at the bottom.
 twoway (scatter nd_interest clemson_interest) ///
 	(lfit nd_interest clemson_interest), ///
 	legend(pos(6))
 
-* 15. The same plot for a different school. Barely changed from step 13.
+* 15. The same plot for a different school. One small change from 13.
 scatter nd_interest mit_interest
 
-* 16. Both comparisons on one graph - two scatters layered.
-*     Without legend(order(...)) Stata labels both series "nd_interest",
-*     which tells the reader nothing. Name them yourself.
+* 16. Both comparisons on ONE graph - two scatters layered. Without
+*     legend(order(...)) Stata labels both series "nd_interest", which
+*     is useless.
 twoway (scatter nd_interest clemson_interest) ///
 	(scatter nd_interest mit_interest), ///
 	legend(order(1 "Clemson" 2 "MIT")) ///
 	xtitle("Other University Interest")
 
-* 17. All three schools over time. This is the one that needed tsset.
+* 17. All three schools over time, as lines. This is the one that needed
+*     the tsset in step 9.
 tsline nd_interest clemson_interest mit_interest, legend(rows(3))
 
 
 ***** PROVIDED - read these, run them, take them apart
 
-* Built one option at a time from what you typed in 13-17. Delete an option
-* and rerun to see what it was doing.
+* Nobody writes a graph this long from memory. They get built one option
+* at a time, starting from what you typed in 13-17. Run it, delete an
+* option, run it again and see what that option was doing.
 
 twoway (scatter nd_interest clemson_interest, mcolor(orange)) ///
 	(scatter nd_interest mit_interest, mcolor(cranberry)) ///
@@ -141,10 +153,10 @@ twoway (scatter nd_interest clemson_interest, mcolor(orange)) ///
 * /// at the end of a line means "this command continues below".
 * Without it, Stata reads each line as its own command.
 
-* 18. Export it. Doing this straight after drawing is the safe habit: in a
-*     batch run, graph export can only reach the graph that is currently
-*     displayed. Interactively each named graph has its own window, so you
-*     can export any of them at any time.
+* 18. Export it. Doing this straight after drawing is the safe habit: in
+*     a batch run, graph export can only reach the graph currently
+*     displayed. Interactively each named graph has its own window, so
+*     you can export any of them at any time.
 graph export "trends_scatter.png", replace
 
 * The last eight years only, with a marker on every September.
@@ -160,12 +172,14 @@ tsline nd_interest clemson_interest mit_interest in 170/272, ///
 * in 170/272 filters by row POSITION, not by date. 272 is the last row.
 * Every September the Notre Dame line jumps. Football season.
 
-graph export "seasons_tsline.png", replace
-
 
 ***** REPORT
 
-* optional
-* 19. Both figures in one image.
+* 19. Export that one too, then combine both into a single image and
+*     export that as well.
+graph export "seasons_tsline.png", replace
+
 graph combine trends_scatter seasons_tsline, name(combo_trends, replace)
 graph export "combo_trends.png", replace
+
+display _n "Block 4 complete."

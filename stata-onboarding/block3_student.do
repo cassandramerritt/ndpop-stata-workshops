@@ -1,150 +1,268 @@
-* block3.do
-* Cleaning the 1980 Census state data
-
-* This is what a do-file looks like when you start one. Not much to it.
-* Lines starting with * are comments. Stata ignores them, people read them.
-* Run highlighted line(s) with Ctrl-D (Windows) or Cmd-Shift-D (Mac), 
-* or the whole file if nothing is highlighted.
+* =====================================================================
+*  Block 3 - Your First Stata Project
+*  Cleaning the 1980 Census state data.
+*
+*  Opens:  first_looks.dta   50 obs, 16 vars  (one row per state)
+*  Saves:  first_looks_clean.dta
+*
+*  YOU write the commands. Each comment says what to do and names the
+*  command in brackets; you work out the syntax. The handout has the
+*  same steps with the results you should see.
+*
+*  Run the highlighted line(s) with Ctrl-D (Windows) / Cmd-Shift-D
+*  (Mac), or the whole file if nothing is highlighted.
+*
+*  Stuck? block3_complete.do has every answer.
+*
+*  Sections marked ADVANCED are not part of the session, and are given
+*  to you complete. Run them afterwards.
+* =====================================================================
 
 clear all
+set more off
 
-* Set your working directory. This is the one line only you can write.
-* Forward slashes, even on Windows. Keep the quotes.
-cd ""
+capture confirm file "first_looks.dta"
+if _rc {
+	capture cd ..
+	confirm file "first_looks.dta"
+}
 
+local startdir "`c(pwd)'"
+
+
+* ---------------------------------------------------------------------
+*  3.1  Where Stata is working
+* ---------------------------------------------------------------------
+* You opened start_here.do by double-clicking, so Stata is already
+* pointed at this folder. If pwd says otherwise, cd to it - start_here.do
+* explains how.
 pwd
-dir
+
+* ADVANCED - not for today.
+* Two shorthands: . is where you are, .. is one level up.
+cd .
+pwd
+cd ..
+pwd
+qui cd "`startdir'"
+pwd
 
 use "first_looks.dta", clear
 
 
-* Add the four age groups together and call it check_pop
+* ---------------------------------------------------------------------
+*  3.2  What a do-file starts with
+* ---------------------------------------------------------------------
+* Lines starting with * are comments. Stata ignores them; people read
+* them. Fill in your own name and today's date on the line below - that
+* is the whole exercise, and it is the thing people skip.
+*
+* block3.do
+* Cleaning the 1980 Census state data
+* your name, today's date
 
 
-* Compare it against pop
+* ---------------------------------------------------------------------
+*  3.3  Does the data add up?
+* ---------------------------------------------------------------------
+* Population is split by age: poplt5, pop5_17, pop18p, pop65p. Those
+* four should total pop.
+
+* 1. Add the four age groups together and call the result check_pop.
+*    (generate)
 
 
-* Now make Stata check it instead of your eyes.
-* This is supposed to fail. Read the error, then we'll keep going.
+
+* 2. Compare check_pop against pop. Use the summarizing command from 2.4.
+*    Check: the means differ - 4,518,149 against 5,027,652.
+
+
+
+* 3. Now make Stata check it instead of your eyes.
+*    This line is SUPPOSED to fail, and it stops the do-file dead.
+*    Read the error, then carry on below it.
 assert pop == check_pop
 
 
-* Redefine check_pop as just the first three age groups.
-* The variable already exists, so this is not generate.
+* 4. Why did it fail? pop18p is "18 and older", which already includes
+*    everyone in pop65p - the over-65s are counted twice. Redefine
+*    check_pop as just the first three groups. It already exists, so
+*    this is not generate. (replace)
 
 
-* Check again. Silence means it passed.
+
+* 5. Check again. Silence means it passed. (assert)
 
 
 
-* optional
-* The same check from the other side. This is also where rename and drop show up.
-generate pop18_65 = pop18p - pop65p
-rename pop18_65 pop18_64
-generate check2_pop = poplt5 + pop5_17 + pop18_64 + pop65p
-summarize pop check2_pop
-assert pop == check2_pop
-drop check_pop check2_pop
+* 6. Build the same check from the other side: pop18p minus pop65p,
+*    called pop18_65. (generate)
 
 
-* Population in millions is easier to read. Divide pop by a million, call it pop_m.
+
+* 7. Is that name accurate? The group runs 18 to 64, not 18 to 65.
+*    Fix it. (rename)
 
 
-* Round it to one decimal place. Use round(). This is a replace, not a generate.
+
+* 8. Build check2_pop from the four groups that no longer overlap,
+*    assert it against pop, then remove both check variables.
+*    (generate, assert, drop)
 
 
+
+
+
+* ---------------------------------------------------------------------
+*  3.4  ADVANCED - not for today.  Functions.
+* ---------------------------------------------------------------------
+* Stata evaluates maths expressions, and ships a library of functions
+* for numbers, strings and dates. Nobody memorises the list. Knowing it
+* exists, and how to search it, is the skill.
+generate pop_m = pop / 1000000
+replace pop_m = round(pop_m, .1)
 help functions
 
 
-* Get percentiles for pop. summarize takes an option for this.
-
-
-* Everything summarize just computed is still in memory. Look at it.
+* ---------------------------------------------------------------------
+*  3.5  ADVANCED - not for today.  Stata remembers more than it shows.
+* ---------------------------------------------------------------------
+* Every command leaves its results in memory; return list shows them.
+* They are overwritten by the next command that returns anything, so use
+* them immediately or store them first. egen reaches the same answer by
+* a different route, which is worth knowing because it usually does.
+summarize pop, detail
 return list
+generate big_state = (pop >= r(p90))
+list state pop if big_state == 1
 
-
-* r(p90) is the 90th percentile. Flag states at or above it.
-* Put the test in parentheses so it comes out as 1/0.
-
-
-* List the states you just flagged
-
-
-
-* optional
-* Same answer, different route.
 egen big_state2 = pctile(pop), p(90)
 replace big_state2 = pop >= big_state2
 assert big_state == big_state2
 drop big_state2
 
 
-* Strings. Watch this one, don't type it.
-* Five state names are stored short: N. Carolina, S. Dakota, W. Virginia and so on.
+* ---------------------------------------------------------------------
+*  3.6  ADVANCED - not for today.  Strings, and a little regex.
+* ---------------------------------------------------------------------
+* Five state names are stored short: N. Carolina, N. Dakota,
+* S. Carolina, S. Dakota, W. Virginia. regexm() asks whether a string
+* matches a pattern; "\." means "contains a full stop". You are not
+* expected to write regular expressions - recognising one is enough.
+*
+* Note: some code uses regexmatch(). That needs Stata 18 or newer.
+* regexm() works in every version, so prefer it.
+*
+* inlist() is the readable way to say "any of these". Writing it as
+*     if state2 == "SC" | "SD"
+* reads like English and is not valid: "SD" on its own is not a test,
+* and Stata answers "type mismatch", r(109).
+*
+* preserve / restore because the replace below overwrites state, and you
+* probably want your data back afterwards.
+preserve
 list state state2 if regexm(state, "\.")
 generate state3 = substr(state, 4, strlen(state)) if regexm(state, "\.")
-
-* This one is wrong on purpose. "SD" by itself is not a test.
-* replace state = "South" if state2 == "SC" | "SD"
+list state state2 state3 if !missing(state3)
 replace state = "South" if inlist(state2, "SC", "SD")
+list state state2 if inlist(state2, "SC", "SD")
+restore
 
 
-* Labels. Three kinds.
-label data "1980 US Census, State Level"
+* ---------------------------------------------------------------------
+*  3.7  Labels
+* ---------------------------------------------------------------------
+* Three kinds, broadest to narrowest: the dataset, a variable, and the
+* values inside a variable.
 
-label variable coastal "On a Coast"
-
-* Value labels work differently. Define a set, then apply it.
-tabulate coastal border
-
-label define yn_dummy 0 "No" 1 "Yes"
-label values coastal border yn_dummy
-
-* Same numbers, readable table.
-tabulate coastal border
+* 9.  Give the dataset a title. (label data)
 
 
-* optional
-* region already came with a label set called cenreg. Edit it in place.
+
+* 10. Give coastal a readable name. (label variable)
+
+
+
+* 11. Value labels work differently: you define a named set once, then
+*     apply it to as many variables as you like. Run tabulate on coastal
+*     and border, then define a set mapping 0 to "No" and 1 to "Yes",
+*     apply it to both variables, and run the same tabulate again.
+*     (tabulate, label define, label values, tabulate)
+*     Check: same numbers, readable table. Labels sit on top of the
+*     values; the data underneath has not moved.
+
+
+
+
+
+
+* ADVANCED - not for today.
+* region arrived with a value label already attached, called cenreg.
+* , modify edits an existing set in place rather than defining a new one.
+* nolabel is SINGULAR - nolabels gives "option nolabels not allowed",
+* r(198).
+* Note this changes how region prints for the rest of your session.
 tabulate region
 label define cenreg 1 "Northeast" 2 "Midwest" 3 "South" 4 "West", modify
 tabulate region
-* nolabel is singular. nolabels errors.
 tabulate region, nolabel
 
 
-* optional
+* ---------------------------------------------------------------------
+*  3.8  Groups
+* ---------------------------------------------------------------------
 * _n is this row's number. _N is the total number of rows.
-generate nval = _n
-generate nvals = _N
-drop nval*
 
-* Inside bysort, _N means rows in this group instead.
-bysort region: generate region_states = _N
-bysort region: generate nval = _n
-bysort region: egen region_pop = sum(pop_m)
+* 12. Create nval from _n and nvals from _N, look at the first few rows,
+*     then drop them both. (generate, list, drop)
+*     What are these two variables?
 
-* nval == 1 prints one row per region instead of all 50.
+
+
+
+* 13. Put bysort region: in front of a command and Stata runs it once
+*     per region - and inside it, _N means "rows in THIS region".
+*     With bysort region:, create region_states from _N, nval from _n,
+*     and region_pop as the total of pop in each region.
+*     (generate, generate, egen with sum())
+
+
+
+
+* 14. List one row per region instead of all 50, showing the region, its
+*     number of states and its total population. (list ... if nval == 1)
+*     Check: four rows - 9, 12, 16 and 13 states.
+*     Inside bysort region:, what does _N mean now? And what is
+*     if nval == 1 doing?
+
+
+
+* The totals print in scientific notation because they are raw counts of
+* people. format changes how a number is DISPLAYED, never its value:
+format region_pop %15.0fc
 list region region_states region_pop if nval == 1
 
-bysort region: egen region_pop_mean = mean(pop_m)
-generate region_pop_mean2 = region_pop / region_states
-list region region_pop_mean region_pop_mean2 if nval == 1
+
+* ---------------------------------------------------------------------
+*  3.9  Log files
+* ---------------------------------------------------------------------
+* The do-file is what you asked. The log is what Stata answered.
+
+* 15. Open a log called test_log.txt, print two things to it with
+*     display, and close it. Three protections belong in there and the
+*     exercise is working out where each goes: capture before the close,
+*     , text on the opening, and , replace on the opening.
+*     (capture log close, log using, display, display, log close)
+*     Check: test_log.txt appears in your folder and opens as readable
+*     text. Without , text you get a screenful of {smcl} markup.
 
 
-* Log files. The do-file is what you asked. The log is what Stata answered.
-* capture means try it and don't stop the file if it fails.
-* Without this line, running twice fails with "log file already open".
-capture log close
-
-* , text matters. Without it you get Stata markup in a .txt file.
-log using "test_log.txt", text replace
-
-display "This is a test."
-display 1 + 1
-
-log close
 
 
-* Save your work.
-save "first_looks_clean.dta", replace
+
+
+* 16. Save your cleaned data as first_looks_clean.dta. (save)
+
+
+
+display _n "Block 3 complete."

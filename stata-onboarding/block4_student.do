@@ -1,58 +1,82 @@
-*** block4.do
-*** Google Trends search interest: Notre Dame, MIT, Clemson
-*** your name here, date here
-
-*** The data are from Google Trends for three different search terms.
-*** Note: Google Trend "interest" numbers are all relative to the maximum of these terms.
-
-*** You write the commands. The comments tell you what to do, not how.
-
-*** Every task ends with a "help:" line listing the help file for each command
-*** or function the answer uses. Open them. That is the actual skill - nobody
-*** memorises Stata, they know what to look up.
-*** Read the SYNTAX block at the top and the EXAMPLES at the bottom; the middle
-*** is reference you can skip until you need it.
-
-*** Stuck? block4_complete.do has every answer.
+*** =====================================================================
+***  Block 4 - First Output from Raw Input
+***  Google Trends search interest: Notre Dame, MIT, Clemson.
+***
+***  THIS IS THE TAKE-HOME BLOCK. We do not work through it in the room;
+***  you saw the figure at the end of the session, and this is the file
+***  that makes it. It is written to be followed on your own, from cold.
+***  Nothing here depends on anything you did during the workshop.
+***
+***  THE DATA. google_trends_universities.csv sits in this same folder -
+***  the one you downloaded and unzipped. It is a raw export, the kind
+***  you actually get handed: 272 monthly rows, January 2004 to August
+***  2026, three columns of search interest.
+***
+***  The numbers are RELATIVE. Google scales them so that the single
+***  highest point across all three search terms is 100. Nothing here
+***  counts people.
+***
+***  HOW TO USE THIS FILE. You write the commands. Each task says what
+***  to do, not how. Every task ends with a "help:" line naming the help
+***  file for each command or function the answer uses - open them. That
+***  is the actual skill: nobody memorises Stata, they know what to look
+***  up. Read the SYNTAX block at the top of a help file and the EXAMPLES
+***  at the bottom; the middle is reference you can skip until you need
+***  it.
+***
+***  Run the highlighted line(s) with Ctrl-D (Windows) / Cmd-Shift-D
+***  (Mac). Stuck? block4_complete.do has every answer, commented.
+*** =====================================================================
 
 clear all
+set more off
 
-* Set your working directory. Forward slashes, even on Windows. Keep the quotes.
-cd ""
+* Find the data whether you are in the workshop folder already or one
+* level down inside it. If this errors, the CSV is not where this file
+* is - put them in the same folder.
+capture confirm file "google_trends_universities.csv"
+if _rc {
+	capture cd ..
+	confirm file "google_trends_universities.csv"
+}
 
 
 ***** IMPORT
 
-* 1. Import google_trends_universities.csv
+* 1. Import google_trends_universities.csv.
 *    The command is not "use" - that is for .dta files. This is a CSV.
 *    Check: 272 observations, 4 variables
 *    help: import delimited
 
 
 
-* 2. Look at what arrived. Three commands from Block 2:
-*    one for structure, one to see the rows, one for summary statistics.
+* 2. Look at what arrived. Three commands from Block 2: one for
+*    structure, one to see the rows, one for summary statistics.
 *    help: describe   summarize
 
 
 
-*    What is one row of this dataset? In Block 2 it was a state. Not here.
-*    Hold onto that question - it is what Workshop 2 is built on.
+*    What is one row of this dataset? In Block 2 it was one state. Not
+*    here. Hold onto that question - it is what Workshop 2 is built on.
+*
+*    And notice what inspection does NOT tell you. You can read the
+*    SHAPE of a dataset off the screen. You cannot read its MEANING -
+*    that the numbers are relative, that nothing here counts people.
 
 
 ***** CLEAN
 
 * 3. The time column came in as TEXT, not a date. Stata cannot sort it,
-*    plot it, or do arithmetic on it until you convert it.
-*    Build a real Stata date from it, then format it so it displays properly.
+*    plot it, or do arithmetic on it until you convert it. Build a real
+*    Stata date from it, then format it so it displays properly.
 *    You need two commands.
 *    Check: it reads 01jan2004, not 16071
 *    help: datetime   format
 
 
 
-* 4. The data is monthly, so a daily date is more precision than you want.
-*    Make a monthly version and format that too.
+* 4. The data is monthly, so a daily date is more precision than you
+*    want. Make a monthly version and format that too.
 *    help: datetime   format
 
 
@@ -62,9 +86,10 @@ cd ""
 
 
 
-* 6. Rename the three interest variables to something you can actually type.
+* 6. Rename the three interest variables to something you can type.
 *    Look at what describe gave you - one of them is
-*    massachusettsinstituteoftechnolo, truncated by the import.
+*    massachusettsinstituteoftechnolo, truncated by the import, because
+*    Stata variable names stop at 32 characters.
 *    You can rename all three in one command.
 *    Suggested names: nd_interest, mit_interest, clemson_interest
 *    help: rename group
@@ -81,16 +106,16 @@ cd ""
 
 
 
-* 9. Tell Stata this is time-series data, indexed by your monthly variable.
-*    Without this, tsline in step 13 will not work.
+* 9. Tell Stata this is time-series data, indexed by your monthly
+*    variable. Without this, tsline in step 17 will not work.
 *    Check: "time variable: month_date, 2004m1 to 2026m8", "delta: 1 month"
 *    help: tsset
 
 
 
-* 10. Save your cleaned data. Two things people forget here:
-*     the path needs QUOTES if it contains a space, and you need , replace
-*     or it fails the second time you run the file.
+* 10. Save your cleaned data. Two things people forget here: the path
+*     needs QUOTES if it contains a space, and you need , replace or it
+*     fails the second time you run the file.
 *     help: save
 
 
@@ -109,6 +134,10 @@ cd ""
 
 
 
+*     Two lines, and a semester of knowing when they are the right two.
+*     Which two, and what they entitle you to say, is a different course.
+
+
 ***** VISUALIZE
 
 * 13. A scatter of Notre Dame interest against Clemson interest.
@@ -117,8 +146,8 @@ cd ""
 
 
 * 14. The same scatter with a fitted line through it. This needs twoway
-*     with two pieces in parentheses. Put the legend at the bottom
-*     with legend(pos(6)).
+*     with two pieces in parentheses. Put the legend at the bottom with
+*     legend(pos(6)).
 *     help: graph twoway   twoway lfit   legend_options
 
 
@@ -130,10 +159,10 @@ cd ""
 
 
 * 16. Put both comparisons on ONE graph - two scatters layered together.
-*     twoway again, but this time both pieces are scatters.
-*     Stata will label them "nd_interest" twice, which is useless, so name
-*     them yourself with legend(order(1 "Clemson" 2 "MIT")).
-*     Give the x axis a title that covers both: xtitle("Other University Interest").
+*     twoway again, but this time both pieces are scatters. Stata will
+*     label them "nd_interest" twice, which is useless, so name them
+*     yourself with legend(order(1 "Clemson" 2 "MIT")). Give the x axis
+*     a title that covers both: xtitle("Other University Interest").
 *     help: graph twoway   legend_options
 
 
@@ -146,9 +175,9 @@ cd ""
 
 ***** PROVIDED - read these, run them, take them apart
 
-* Nobody writes a graph this long from memory. They get built one option at
-* a time, starting from what you just typed in steps 13-15. Run them, then
-* delete an option and see what changes.
+* Nobody writes a graph this long from memory. They get built one option
+* at a time, starting from what you just typed in steps 13-17. Run them,
+* then delete an option and see what changes.
 
 twoway (scatter nd_interest clemson_interest, mcolor(orange)) ///
 	(scatter nd_interest mit_interest, mcolor(cranberry)) ///
@@ -159,8 +188,18 @@ twoway (scatter nd_interest clemson_interest, mcolor(orange)) ///
 	xtitle("Other University Interest") ///
 	name(trends_scatter, replace)
 
-* /// at the end of a line means "this command continues on the next line".
-* Without it Stata reads each line as a separate command.
+* /// at the end of a line means "this command continues on the next
+* line". Without it Stata reads each line as a separate command.
+
+
+* 18. Export that figure as a PNG. Quote the filename, use , replace.
+*     Do it straight after drawing - that is the safe habit, because in
+*     a batch run graph export can only reach the graph currently
+*     displayed.
+*     Check: a .png appears in your folder
+*     help: graph export
+
+
 
 * The last eight years only, with a marker on every September.
 * Watch what happens each fall.
@@ -175,17 +214,14 @@ tsline nd_interest clemson_interest mit_interest in 170/272, ///
 	name(seasons_tsline, replace)
 
 * in 170/272 filters by row position, not by date. 272 is the last row.
+* Every September the Notre Dame line jumps. Football season.
 
 
 ***** REPORT
 
-* 18. Export one of your figures as a PNG.
-*     name() picks which graph. Quote the filename. Use , replace.
-*     help: graph export
+* 19. Export that one too, then put both figures in one image and export
+*     that as well.
+*     help: graph export   graph combine
 
 
 
-* optional
-* 19. Put both figures in one image and export that too.
-graph combine trends_scatter seasons_tsline, name(combo_trends, replace)
-graph export "combo_trends.png", name(combo_trends) replace
