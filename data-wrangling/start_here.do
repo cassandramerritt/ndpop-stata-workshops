@@ -9,13 +9,13 @@
 * =====================================================================
 
 
-* --- 1. Where am I? ---------------------------------------------------
+***** 1. Where am I
 * This should print the folder this file is sitting in.
 
 pwd
 
 
-* --- 2. Can I see the data? -------------------------------------------
+***** 2. Can I see the data?
 * This should list 14 .dta files.
 
 dir *.dta
@@ -36,7 +36,9 @@ dir *.dta
 *
 *  It will look something like this:
 *
-*  cd "C:\Users\<netid>\Downloads\ndpop-stata-workshops-main\ndpop-stata-workshops-main\data-wrangling"
+*  cd "C:\Users\<netid>\Downloads\data-wrangling"
 *
 *  Then run pwd and dir *.dta again.
+*
+*  YOU CAN DELETE THIS COMMENT BLOCK WHEN YOU ARE DONE WITH IT
 * =====================================================================
