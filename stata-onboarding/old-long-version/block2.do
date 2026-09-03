@@ -18,7 +18,7 @@ use "first_looks.dta", clear
 // bro
 
 
-*** 2.4 Describing, and the Syntax of a Command
+*** 2.4 Describing, and the Shape of a Command
 
 * the whole dataset, then one variable
 describe
@@ -64,6 +64,17 @@ tabulate border coastal, row column
 * how many, and which ones
 count if border == 1 & coastal == 1
 list state if border == 1 & coastal == 1
+
+
+*** 2.7 ADVANCED - not for today
+
+* sort goes up only. gsort takes a minus sign to go down
+sort pop
+gsort pop65p
+gsort -pop65p
+
+* in filters by position, if by value
+list state pop65p in 1/5
 
 
 *** 2.8 Your First Do-File

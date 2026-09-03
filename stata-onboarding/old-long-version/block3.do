@@ -51,6 +51,53 @@ assert pop == check2_pop
 drop check_pop check2_pop
 
 
+*** 3.4 ADVANCED - not for today. Functions.
+
+* Stata does arithmetic, and ships a library of functions
+generate pop_m = pop / 1000000
+replace pop_m = round(pop_m, .1)
+
+* nobody memorises the list. knowing it exists is the skill
+help functions
+
+
+*** 3.5 ADVANCED - not for today. Stored results.
+
+* detail adds the percentiles
+summarize pop, detail
+
+* everything summarize just worked out is still sitting in memory
+return list
+
+* r(p90) is the 90th percentile. use it now or the next command wipes it
+generate big_state = (pop >= r(p90))
+list state pop if big_state == 1
+
+* egen gets to the same answer by a different route
+egen big_state2 = pctile(pop), p(90)
+replace big_state2 = pop >= big_state2
+assert big_state == big_state2
+drop big_state2
+
+
+*** 3.6 ADVANCED - not for today. Text.
+
+* preserve, because the replace below overwrites state
+preserve
+
+* five state names are stored short. "\." means "contains a full stop"
+list state state2 if regexm(state, "\.")
+
+* substr pulls out the part after the abbreviation
+generate state3 = substr(state, 4, strlen(state)) if regexm(state, "\.")
+
+* inlist is the readable way to say "any of these"
+replace state = "South" if inlist(state2, "SC", "SD")
+
+* put the data back the way it was
+restore
+
+
 *** 3.7 Labels
 
 * a title for the dataset, and a readable name for one variable
@@ -68,6 +115,19 @@ label values coastal border yn_dummy
 tabulate coastal border
 
 * same numbers, readable table. the values underneath did not move
+
+
+*** 3.7 ADVANCED - not for today. Editing a label that already exists.
+
+* region arrived with a value label called cenreg
+tabulate region
+
+* , modify edits an existing set instead of defining a new one
+label define cenreg 1 "Northeast" 2 "Midwest" 3 "South" 4 "West", modify
+tabulate region
+
+* nolabel shows the numbers underneath. it is singular; nolabels errors
+tabulate region, nolabel
 
 
 *** 3.8 Groups
